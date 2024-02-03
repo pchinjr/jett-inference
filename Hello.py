@@ -187,15 +187,11 @@ agent = initialize_agent(
 def extract_relevant_urls_from_search(search_results, company_name):
     relevant_urls = []
     for result in search_results.get('organic', []):
-        url = result.get('link', '')
-        content = result.get('content', '').lower()
-        title = result.get('title', '').lower()
-        
-        if company_name.lower() in content or company_name.lower() in title:
-            relevant_urls.append(url)
+      url = result.get('link', '')
+      relevant_urls.append(url)
     return relevant_urls
 
-def generate_blog_topics_from_content(content):
+def generate_blog_topic_from_content(content):
 
     # Define a prompt for the agent to generate questions based on the content
     prompt = f"Based on the following content, generate potential blog topics:\n\n{content}\n\nBlog Topics:"
@@ -212,12 +208,11 @@ def research_business_summary(company_name, company_url):
 
     # Feedback to the user
     print("Researching company website...")
-    query = f"summarize {company_name} line of business"
+    query = f"What is {company_name}'s main line of business is based on their website at {company_url}"
     search_results = json.loads(search(query))
 
     # Feedback to the user
     print("Extracting relevant URLs from the search results...")
-    print(f"{search_results}")
     relevant_urls = extract_relevant_urls_from_search(search_results, company_name)
     
     all_blog_topics = []
@@ -234,8 +229,8 @@ def research_business_summary(company_name, company_url):
         if content:
             # Feedback to the user
             print("Generating blog topics based on the scraped content...")
-            questions = generate_blog_topics_from_content(content)
-            all_blog_topics.extend(questions)
+            blog_topic = generate_blog_topic_from_content(content)
+            all_blog_topics.extend(blog_topic)
         loop_count += 1
 
     return all_blog_topics
