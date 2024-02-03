@@ -225,7 +225,7 @@ def research_business_summary(company_name, company_url):
             break
         # Feedback to the user
         print(f"Scraping content from {url}...")
-        content = scrape_website("Business summary", url)
+        content = scrape_website("potential blog topics", url)
         if content:
             # Feedback to the user
             print("Generating blog topics based on the scraped content...")
