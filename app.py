@@ -184,14 +184,14 @@ agent = initialize_agent(
 )
 
 # Extract relevant URLs from search results
-def extract_relevant_urls_from_search(search_results, company_name, role):
+def extract_relevant_urls_from_search(search_results, company_name):
     relevant_urls = []
     for result in search_results.get('organic', []):
         url = result.get('link', '')
         content = result.get('content', '').lower()
         title = result.get('title', '').lower()
         
-        if company_name.lower() in content or role.lower() in content or company_name.lower() in title or role.lower() in title:
+        if company_name.lower() in content or company_name.lower() in title:
             relevant_urls.append(url)
     return relevant_urls
 
@@ -211,12 +211,13 @@ def generate_blog_topics_from_content(content):
 def research_business_summary(company_name, company_url):
 
     # Feedback to the user
-    print("Searching for interview experiences online...")
-    query = f"summarize {company_name} line of business from their website at {company_url}"
+    print("Researching company website...")
+    query = f"summarize {company_name} line of business"
     search_results = json.loads(search(query))
 
     # Feedback to the user
     print("Extracting relevant URLs from the search results...")
+    print(f"{search_results}")
     relevant_urls = extract_relevant_urls_from_search(search_results, company_name)
     
     all_blog_topics = []
@@ -254,7 +255,8 @@ def main():
         
         # Display relevant questions
         st.header("Summary Results:")
-        st.write(f"{summary_results}")
+        for idx, topic in enumerate(summary_results, 1):
+            st.write(f"{idx}. {topic}")
 
 if __name__ == '__main__':
     main()
