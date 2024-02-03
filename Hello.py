@@ -193,16 +193,16 @@ def extract_relevant_urls_from_search(search_results, company_name):
 
 def generate_blog_topic_from_content(content):
 
-    # Define a prompt for the agent to generate questions based on the content
+    # Define a prompt for the agent to generate blog topics based on the content
     prompt = f"Based on the following content, generate potential blog topics:\n\n{content}\n\nBlog Topics:"
     
     # Use the agent to generate questions
     response = agent.run(prompt)
     
-    # Extract questions from the agent's response
-    questions = [q.strip() for q in response.split('\n') if q.strip()]
+    # Extract topics from the agent's response
+    topics = [q.strip() for q in response.split('\n') if q.strip()]
     
-    return questions
+    return topics
 
 def research_business_summary(company_name, company_url):
 
@@ -216,6 +216,7 @@ def research_business_summary(company_name, company_url):
     relevant_urls = extract_relevant_urls_from_search(search_results, company_name)
     
     all_blog_topics = []
+    last_set_of_blog_topics = []
     loop_limit = 3
     loop_count = 0
     
@@ -230,10 +231,11 @@ def research_business_summary(company_name, company_url):
             # Feedback to the user
             print("Generating blog topics based on the scraped content...")
             blog_topic = generate_blog_topic_from_content(content)
+            last_set_of_blog_topics = blog_topic
             all_blog_topics.extend(blog_topic)
         loop_count += 1
 
-    return all_blog_topics
+    return all_blog_topics, last_set_of_blog_topics
                               
 
 # Streamlit web app
@@ -246,12 +248,13 @@ def main():
 
     if st.button("Research Company"):
         st.info(f"Researching {company_name} and generating a summary...")
-        summary_results = research_business_summary(company_name, company_url)
+        summary_results, last_set_of_blog_topics = research_business_summary(company_name, company_url)
         
         # Display relevant questions
         st.header("Summary Results:")
-        for idx, topic in enumerate(summary_results, 1):
-            st.write(f"{idx}. {topic}")
+        for topic in last_set_of_blog_topics:
+            st.write(f"{topic}")
+        print(f"All done")
 
 if __name__ == '__main__':
     main()
